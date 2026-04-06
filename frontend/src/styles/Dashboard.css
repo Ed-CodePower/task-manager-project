@@ -29,17 +29,17 @@
     gap: 0.75rem;
 }
 
-.task-form textarea {
-    min-height: 5rem;
-    resize: vertical;
-}
-
 .task-form input,
 .task-form textarea,
 .task-form select,
 .task-form button {
     padding: 0.75rem;
     border-radius:  0.5rem;
+}
+
+.task-form textarea {
+    min-height: 5rem;
+    resize: vertical;
 }
 
 .task-form button {
