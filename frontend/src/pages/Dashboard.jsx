@@ -1,4 +1,6 @@
 import { useState } from "react";
+import TaskForm from "../components/TaskForm";
+import TaskColumn from "../components/TaskColumn";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
@@ -104,28 +106,7 @@ function Dashboard() {
             <p>Organize your tasks by progress status.</p>
         </header>
 
-        <section className="task-form-section" aria-labelledby="add-task-heading">
-            <h2 id="add-task-heading">Add New Task</h2>
-
-            <form className="task-form" onSubmit={handleSubmit}>
-                <label htmlFor="task-title">Task Title</label>
-                <input id="task-title" name="title" type="text" placeholder="Enter task title" value={formData.title} onChange={handleChange} />
-
-                <label htmlFor="task-description">Description</label>
-                <textarea id="task-description" name="description" placeholder="Enter task description" value={formData.description} onChange={handleChange}></textarea>
-
-                <label htmlFor="task-status">Status</label>
-                <select id="task-status" name="status" value={formData.status} onChange={handleChange}>
-                    {statusList.map((statusItem) => (
-                        <option key={statusItem.id} value={statusItem.id}>
-                            {statusItem.title}
-                        </option>
-                    ))}
-                </select>
-
-                <button type="submit">Add Task</button>
-            </form>
-        </section>
+        <TaskForm formData={formData} statusList={statusList} onChange={handleChange} onSubmit={handleSubmit} />
 
         <section className="task-board" aria-label="Task board">
             {statusList.map((statusItem) => {
@@ -134,23 +115,7 @@ function Dashboard() {
                 );
 
                 return (
-                    <section className="task-column" key={statusItem.id} aria-labelledby={statusItem.id}>
-                        <h2 id={statusItem.id}>{statusItem.title}</h2>
-                        {filteredTasks.length === 0 ? (
-                            <p className="empty-message">No tasks in this section.</p>
-                        ) : (
-                            filteredTasks.map((task) => (
-                                <article className="task-card" key={task.id}>
-                                    <h3>{task.title}</h3>
-                                    <p>{task.description || "No description provided."}</p>
-
-                                    <button type="button" className="move-button" onClick={() => handleMove(task.id)}>Move</button>
-
-                                    <button type="button" className="delete-button" onClick={() => handleDelete(task.id)}>Delete</button>
-                                </article>
-                            ))
-                        )}
-                    </section>
+                    <TaskColumn key={statusItem.id} statusItem={statusItem} tasks={filteredTasks} onMove={handleMove} onDelete={handleDelete} />
                 );
             })}
         </section>
