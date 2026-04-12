@@ -1,7 +1,7 @@
-function TaskForm({ formData, statusList, onChange, onSubmit }) {
+function TaskForm({ formData, statusList, onChange, onSubmit, editingTaskId, onCancelEdit }) {
     return (
         <section className="task-form-section" aria-labelledby="add-task-heading">
-            <h2 id="add-task-heading">Add New Task</h2>
+            <h2 id="add-task-heading">{editingTaskId ? "Edit Task" : "Add New Task"}</h2>
 
             <form className="task-form" onSubmit={onSubmit}>
                 <label htmlFor="task-title">Task Title</label>
@@ -19,7 +19,11 @@ function TaskForm({ formData, statusList, onChange, onSubmit }) {
                 ))}
                 </select>
 
-                <button type="submit">Add Task</button>
+                <button type="submit">{editingTaskId ? "Update Task" : "Add Task"}</button>
+
+                {editingTaskId && (
+                    <button type="button" className="cancel-button" onClick={onCancelEdit}>Cancel Edit</button>
+                )}
             </form>
         </section>
     );

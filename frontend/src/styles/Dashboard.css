@@ -50,6 +50,10 @@
     color: white;
 }
 
+.cancel-button{
+    background-color: #777;
+}
+
 .task-board {
     display: grid;
     grid-template-columns: 1fr;
@@ -90,6 +94,10 @@
 
 .move-button {
     background-color: #222;
+}
+
+.edit-button {
+    background-color: #1f5f8b;
 }
 
 .delete-button {
