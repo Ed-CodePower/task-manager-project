@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const connectDb = require("../config/db");
 
 async function registerUser(req, res){
     try{
@@ -11,15 +12,33 @@ async function registerUser(req, res){
             });
         }
 
+        const db = await connectDb();
+
+        const existingUser = await db.get(
+            "SELECT * FROM users WHERE email = ?",
+            [email]
+        );
+
+        if(existingUser){
+            return res.status(400).json({
+                message: "Email already registered.",
+            });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        const result = await db.run(
+            "INSERT INTO users (name, email, password) VALUES (?,?,?)",
+            [name, email, hashedPassword]
+        );
 
         return res.status(201).json({
             message: "User registered successfully.",
             user: {
+                id: result.lastID,
                 name,
                 email,
             },
-            passwordHashPreview: hashedPassword.substring(0, 20) + "...",
         });
     }
     catch (error) {
@@ -40,20 +59,20 @@ async function loginUser(req, res) {
             });
         }
 
-        const mockUser = {
-            id: 1,
-            name: "Test User",
-            email: "test@example.com",
-            password: await bcrypt.hash("password123", 10),
-        };
+        const db = await connectDb();
 
-        if (email !== mockUser.email){
+        const user = await db.get(
+            "SELECT * FROM users WHERE email = ?",
+            [email]
+        );
+
+        if (!user){
             return res.status(401).json({
                 message: "Invalid email or password.",
             });
         }
 
-        const passwordMatch = await bcrypt.compare(password, mockUser.password);
+        const passwordMatch = await bcrypt.compare(password, user.password);
 
         if(!passwordMatch){
             return res.status(401).json({
@@ -62,7 +81,7 @@ async function loginUser(req, res) {
         }
 
         const token = jwt.sign(
-            { userId: mockUser.id, email: mockUser.email }, 
+            { userId: user.id, email: user.email }, 
             process.env.JWT_SECRET || "fallback_secret_key",
             { expiresIn: "1h"}
         );
@@ -71,9 +90,9 @@ async function loginUser(req, res) {
             message: "Login successful.",
             token,
             user: {
-                id: mockUser.id,
-                name: mockUser.name,
-                email: mockUser.email,
+                id: user.id,
+                name: user.name,
+                email: user.email,
             },
         });
     }
