@@ -43,12 +43,30 @@ function Dashboard() {
 
   useEffect(() => {
     async function fetchTasks() {
-      const data = await getTasks(token);
-      setTasks(data);
+      try {
+        if (!token) {
+          navigate("/");
+          return;
+        }
+
+        const data = await getTasks(token);
+
+        if (Array.isArray(data)) {
+          setTasks(data);
+        } else {
+          setTasks([]);
+        }
+      } catch (error) {
+        console.error("Failed to load tasks:", error.message);
+        alert(error.message);
+
+        localStorage.removeItem("token");
+        navigate("/");
+      }
     }
 
     fetchTasks();
-  }, [token]);
+  }, [token, navigate]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -63,55 +81,68 @@ function Dashboard() {
     event.preventDefault();
 
     if (formData.title.trim() === "") {
-      alert("Task title is required.");
+      alert("Task title required");
       return;
     }
 
-    if (editingTaskId) {
-      const updated = await updateTask(editingTaskId, formData, token);
+    try {
+      if (editingTaskId) {
+        const updated = await updateTask(editingTaskId, formData, token);
 
-      setTasks((prev) => 
-        prev.map((task) =>
-          task.id === editingTaskId ? updated.task : task
-        )
-      );
+        setTasks((prev) =>
+          prev.map((task) =>
+            task.id === editingTaskId ? updated.task : task
+          )
+        );
 
-      setEditingTaskId(null);
+        setEditingTaskId(null);
+      } else {
+        const data = await createTask(formData, token);
+        setTasks((prev) => [...prev, data.task]);
+      }
+
+      setFormData({
+        title: "",
+        description: "",
+        status: "todo",
+      });
+    } catch (error) {
+      alert(error.message);
     }
-    else{
-      const data = await createTask(formData, token);
-      setTasks((prev) => [...prev, data.task]);
-    }
-
-    setFormData({
-      title: "",
-      description: "",
-      status: "todo",
-    });
   }
 
   async function handleMove(id) {
-    const task = tasks.find((task) => task.id === id);
+    try {
+      const task = tasks.find((task) => task.id === id);
 
-    const currentIndex = statusList.findIndex((statusItem) => statusItem.id === task.status);
+      const currentIndex = statusList.findIndex(
+        (statusItem) => statusItem.id === task.status
+      );
 
-    const nextStatus = statusList[(currentIndex + 1) % statusList.length].id;
+      const nextStatus =
+        statusList[(currentIndex + 1) % statusList.length].id;
 
-    const updated = await updateTask(
-      id,
-      {...task, status: nextStatus},
-      token
-    );
+      const updated = await updateTask(
+        id,
+        { ...task, status: nextStatus },
+        token
+      );
 
-    setTasks((prev) => 
-      prev.map((task) => (task.id === id ? updated.task : task))
-    );
+      setTasks((prev) =>
+        prev.map((task) => (task.id === id ? updated.task : task))
+      );
+    } catch (error) {
+      alert(error.message);
+    }
   }
 
   async function handleDelete(id) {
-    await deleteTask(id, token);
-
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    try {
+      await deleteTask(id, token);
+      setTasks((prev) => prev.filter((task) => task.id !== id));
+    } catch (error) {
+      alert(error.message);
+    }
   }
 
   function handleEdit(task) {

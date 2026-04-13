@@ -22,14 +22,13 @@ function Login() {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        const data = await loginUser(formData);
+        try {
+            const data = await loginUser(formData);
 
-        if(data.token){
             localStorage.setItem("token", data.token);
             navigate("/dashboard");
-        }
-        else {
-            alert(data.message || "Login failed");
+        } catch (error) {
+            alert(error.message);
         }
     }
 
