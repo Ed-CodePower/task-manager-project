@@ -1,12 +1,36 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Auth.css"
+import { loginUser } from "../services/api";
+import "../styles/Auth.css";
 
 function Login() {
     const navigate = useNavigate();
-    function handleSubmit(event) {
+
+    const [formData, setFormData ] = useState({
+        email: "",
+        password: "",
+    });
+
+    function handleChange(event){
+        const { name, value } = event.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    }
+
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        navigate("/dashboard");
+        const data = await loginUser(formData);
+
+        if(data.token){
+            localStorage.setItem("token", data.token);
+            navigate("/dashboard");
+        }
+        else {
+            alert(data.message || "Login failed");
+        }
     }
 
     return (
@@ -21,8 +45,8 @@ function Login() {
                         id="login-email"
                         name="email"
                         type="email"
-                        placeholder="Enter your email"
-                        required
+                        value={formData.email}
+                        onChange={handleChange}
                     />
 
                     <label htmlFor="login-password">Password</label>
@@ -30,8 +54,8 @@ function Login() {
                         id="login-password"
                         name="password"
                         type="password"
-                        placeholder="Enter your password"
-                        required
+                        value={formData.password}
+                        onChange={handleChange}
                     />
 
                     <button type="submit">Login</button>

@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "../services/api";
 import TaskForm from "../components/TaskForm";
 import TaskColumn from "../components/TaskColumn";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   const statusList = [
     { id: "todo", title: "To Do" },
     { id: "in-progress", title: "In Progress" },
@@ -12,31 +21,7 @@ function Dashboard() {
     { id: "revisit", title: "Need Revisit" },
   ];
 
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks
-      ? JSON.parse(savedTasks)
-      : [
-          {
-            id: 1,
-            title: "Finish React layout",
-            description: "Build the task board and form",
-            status: "todo",
-          },
-          {
-            id: 2,
-            title: "Plan backend structure",
-            description: "Prepare routes, models, and controllers",
-            status: "in-progress",
-          },
-          {
-            id: 3,
-            title: "Review project requirements",
-            description: "Check rubric and deliverables",
-            status: "hold",
-          },
-        ];
-  });
+  const [tasks, setTasks] = useState([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -47,8 +32,23 @@ function Dashboard() {
   const [editingTaskId, setEditingTaskId] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    const token = localStorage.getItem("token");
+
+    if(!token){
+      navigate("/");
+    }
+  }, []);
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    async function fetchTasks() {
+      const data = await getTasks(token);
+      setTasks(data);
+    }
+
+    fetchTasks();
+  }, [token]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -59,7 +59,7 @@ function Dashboard() {
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     if (formData.title.trim() === "") {
@@ -68,29 +68,19 @@ function Dashboard() {
     }
 
     if (editingTaskId) {
-      setTasks((currentTasks) =>
-        currentTasks.map((task) =>
-          task.id === editingTaskId
-            ? {
-                ...task,
-                title: formData.title.trim(),
-                description: formData.description.trim(),
-                status: formData.status,
-              }
-            : task
+      const updated = await updateTask(editingTaskId, formData, token);
+
+      setTasks((prev) => 
+        prev.map((task) =>
+          task.id === editingTaskId ? updated.task : task
         )
       );
 
       setEditingTaskId(null);
-    } else {
-      const newTask = {
-        id: Date.now(),
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        status: formData.status,
-      };
-
-      setTasks((currentTasks) => [...currentTasks, newTask]);
+    }
+    else{
+      const data = await createTask(formData, token);
+      setTasks((prev) => [...prev, data.task]);
     }
 
     setFormData({
@@ -100,40 +90,28 @@ function Dashboard() {
     });
   }
 
-  function handleMove(taskId) {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) => {
-        if (task.id !== taskId) {
-          return task;
-        }
+  async function handleMove(id) {
+    const task = tasks.find((task) => task.id === id);
 
-        const currentIndex = statusList.findIndex(
-          (statusItem) => statusItem.id === task.status
-        );
+    const currentIndex = statusList.findIndex((statusItem) => statusItem.id === task.status);
 
-        const nextIndex = (currentIndex + 1) % statusList.length;
+    const nextStatus = statusList[(currentIndex + 1) % statusList.length].id;
 
-        return {
-          ...task,
-          status: statusList[nextIndex].id,
-        };
-      })
+    const updated = await updateTask(
+      id,
+      {...task, status: nextStatus},
+      token
+    );
+
+    setTasks((prev) => 
+      prev.map((task) => (task.id === id ? updated.task : task))
     );
   }
 
-  function handleDelete(taskId) {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => task.id !== taskId)
-    );
+  async function handleDelete(id) {
+    await deleteTask(id, token);
 
-    if (editingTaskId === taskId) {
-      setEditingTaskId(null);
-      setFormData({
-        title: "",
-        description: "",
-        status: "todo",
-      });
-    }
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   }
 
   function handleEdit(task) {
