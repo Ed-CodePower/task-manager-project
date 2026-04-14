@@ -1,16 +1,139 @@
-# React + Vite
+# TaskFlow - Full-Stack Task Management Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
 
-Currently, two official plugins are available:
+TaskFlow is a full-stack web application that allows users to register, log in, and manage tasks efficiently. Users can create, update, delete, and organize tasks into different statuses such as To Do, In Progress, Hold, Done, and Need Revisit.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This project demonstrates frontend, backend, database integration, authentication, and deloyment readiness.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- User Registration and Login (JWT Authentication)
+- Password hashing using bcrypt
+- Create, Read, Update, Delete (CRUD) tasks
+- Task status management:
+    - To DO
+    - In Progress
+    - Hold
+    - Done
+    - Need Revisit
+- Protected routes (only logged-in users can access tasks)
+- Responsive UI (mobile-first design)
+- Persistent data storage using SQLite
+- Organized React component structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+### Frontend
+- React (Vite)
+- React Router
+- CSS (mobile-first design)
+
+### Backend
+- Node.js
+- Express.js
+- JWT (Authentication)
+- bcryptjs (Password hashing)
+
+### Database
+- SQLite
+
+---
+
+## Project Structure
+task-manager-project/
+|
+|- frontend/
+|   |- src/
+|   |   |- components/
+|   |   |- pages/
+|   |   |- services/
+|   |   |- styles/
+|
+|- backend/
+|   |- controllers/
+|   |- routes/
+|   |- middleware/
+|   |- config/
+|   |-server.js
+
+---
+
+## Installation & Setup
+
+### 1. Clone the repository
+git clone https://github.com/Ed-CodePower/task-manager-project.git
+cd task-manager-project
+
+--- 
+
+### 2. Setup Backend
+cd backed
+npm install
+npm run dev
+
+backend runs at:
+http://localhost:5000
+
+---
+
+### 3. Setup Frontend
+Open a new terminal:
+cd frontend
+npm install
+npm run dev
+
+Frontend runs at:
+http:/localhost:3000
+
+---
+
+## Authentication
+
+- Users must register and log in
+- JWT token is stored in localStorage
+- Token is required to access task routes
+
+---
+
+## API Endpoits
+
+### AUTH
+- POST `/api/auth/register`
+- POST `/api/auth/login`
+
+### Tasks
+- GET `/api/tasks`
+- POST `/api/tasks`
+- PUT `/api/tasks/:id`
+- DELETE `/api/tasks/:id`
+
+---
+
+## Testing
+
+Test cases performed:
+- User registration with valid input
+- Login with correct/incorrect credentials
+- Task creation
+- Task movement between statuses
+- Task deletion
+- Empty input validation
+
+---
+
+## Future Improvements
+
+- Add due dates and priorities
+- Drag-and-Drop task movement
+- Dark mode UI
+- Change color palette
+
+---
+
+## Author
+Edward Cicio
