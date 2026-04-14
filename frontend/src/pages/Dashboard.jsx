@@ -171,7 +171,7 @@ function Dashboard() {
           className="logout-button" 
           onClick={() => {
             localStorage.removeItem("token");
-            window.location.href = "/"
+            navigate("/");
           }}>Logout</button>
         <p>Organize your tasks by progress status.</p>
       </header>
