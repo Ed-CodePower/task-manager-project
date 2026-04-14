@@ -167,6 +167,12 @@ function Dashboard() {
     <main className="dashboard">
       <header className="dashboard-header">
         <h1>Task Manager</h1>
+        <button 
+          className="logout-button" 
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.href = "/"
+          }}>Logout</button>
         <p>Organize your tasks by progress status.</p>
       </header>
 

@@ -3,12 +3,28 @@
 }
 
 .dashboard-header{
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     margin-bottom: 1.5rem;
 }
 
 .dashboard-header h1{
     margin-bottom: 0.5rem;
+}
+
+.logout-button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.logout-button:hover{
+    opacity: 0.9;
 }
 
 .task-form-section,
