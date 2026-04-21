@@ -128,28 +128,6 @@ http:/localhost:3000
 
 ---
 
-## Testing
-
-Test cases performed:
-- User registration with valid input
-- Login with correct/incorrect credentials
-- Task creation
-- Task movement between statuses
-- Task deletion
-- Empty input validation
-- Data persistence after refresh
-
----
-
-## Security
-
-- Passwords are hashed using bcrypt
-- JWT tokens used for authentication
-- Protected API routes using middleware
-- Users can only access their own tasks
-
----
-
 ## Deployment
 
 The application is deployed using Render:
@@ -157,24 +135,6 @@ The application is deployed using Render:
 - Backend and frontend served from a single Web Service
 - PostgreSQL database hosted on Render
 - Environment variables configured for secure access
-
----
-
-## Challenges and Solutions
-
-### Challenge:
-Handling API requests in production without hardcoding URLs.
-
-### Solution:
-Used environment variables with Vite (`VITE_API_URL`) and fallback `/api` routing to support both local development and production deployment.
-
----
-
-### Challenge:
-Ensuring secure authentication and protecting user data.
-
-### Solution:
-Implemented JWT authentication and bcrypt password hashing. Protected routes ensure only authenticated users can access their data.
 
 ---
 
