@@ -24,7 +24,7 @@ https://taskflow-app-z8pa.onrender.com
     - Need Revisit
 - Protected routes (only logged-in users can access tasks)
 - Responsive UI (mobile-first design)
-- Persistent data storage using SQLite
+- Persistent data storage using PostgresSQL
 - Full deployment on Render
 
 ---
