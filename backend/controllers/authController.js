@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const connectDb = require("../config/db");
+const pool = require("../config/db");
 
 async function registerUser(req, res){
     try{
@@ -12,14 +12,12 @@ async function registerUser(req, res){
             });
         }
 
-        const db = await connectDb();
-
-        const existingUser = await db.get(
-            "SELECT * FROM users WHERE email = ?",
+        const existingUser = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
             [email]
         );
 
-        if(existingUser){
+        if(existingUser.rows.length > 0){
             return res.status(400).json({
                 message: "Email already registered.",
             });
@@ -27,18 +25,14 @@ async function registerUser(req, res){
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const result = await db.run(
-            "INSERT INTO users (name, email, password) VALUES (?,?,?)",
+        const result = await pool.query(
+            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email",
             [name, email, hashedPassword]
         );
 
         return res.status(201).json({
             message: "User registered successfully.",
-            user: {
-                id: result.lastID,
-                name,
-                email,
-            },
+            user: result.rows[0],
         });
     }
     catch (error) {
@@ -59,12 +53,12 @@ async function loginUser(req, res) {
             });
         }
 
-        const db = await connectDb();
-
-        const user = await db.get(
-            "SELECT * FROM users WHERE email = ?",
+        const userResult = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
             [email]
         );
+
+        const user = userResult.rows[0];
 
         if (!user){
             return res.status(401).json({
