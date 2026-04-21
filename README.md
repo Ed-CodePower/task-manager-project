@@ -8,6 +8,9 @@ This project demonstrates frontend, backend, database integration, authenticatio
 
 ---
 
+## Live Demo
+https://taskflow-app-z8pa.onrender.com
+
 ## Features
 
 - User Registration and Login (JWT Authentication)
@@ -22,7 +25,7 @@ This project demonstrates frontend, backend, database integration, authenticatio
 - Protected routes (only logged-in users can access tasks)
 - Responsive UI (mobile-first design)
 - Persistent data storage using SQLite
-- Organized React component structure
+- Full deployment on Render
 
 ---
 
@@ -40,7 +43,10 @@ This project demonstrates frontend, backend, database integration, authenticatio
 - bcryptjs (Password hashing)
 
 ### Database
-- SQLite
+- PostgreSQL (Render Cloud Database)
+
+## Deployment
+- Render (Web Service)
 
 ---
 
@@ -76,9 +82,6 @@ cd backed
 npm install
 npm run dev
 
-backend runs at:
-http://localhost:5000
-
 ---
 
 ### 3. Setup Frontend
@@ -89,6 +92,17 @@ npm run dev
 
 Frontend runs at:
 http:/localhost:3000
+
+---
+
+## Environment Variables
+
+### Backend (`backend/.env)
+- DATABASE_URL = postgresql://taskflow_ey92_user:liiG9Z1wj6EnNQYMmWL042jmveK9aXIL@dpg-d7jp85navr4c73chb7ig-a.virginia-postgres.render.com/taskflow_ey92
+- JWT_SECRET = supersecretkey123
+
+### Frontend (`frontend/.env.development)
+- VITE_API_URL = https://localhost:5000/api
 
 ---
 
@@ -123,6 +137,44 @@ Test cases performed:
 - Task movement between statuses
 - Task deletion
 - Empty input validation
+- Data persistence after refresh
+
+---
+
+## Security
+
+- Passwords are hashed using bcrypt
+- JWT tokens used for authentication
+- Protected API routes using middleware
+- Users can only access their own tasks
+
+---
+
+## Deployment
+
+The application is deployed using Render:
+
+- Backend and frontend served from a single Web Service
+- PostgreSQL database hosted on Render
+- Environment variables configured for secure access
+
+---
+
+## Challenges and Solutions
+
+### Challenge:
+Handling API requests in production without hardcoding URLs.
+
+### Solution:
+Used environment variables with Vite (`VITE_API_URL`) and fallback `/api` routing to support both local development and production deployment.
+
+---
+
+### Challenge:
+Ensuring secure authentication and protecting user data.
+
+### Solution:
+Implemented JWT authentication and bcrypt password hashing. Protected routes ensure only authenticated users can access their data.
 
 ---
 
